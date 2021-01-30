@@ -47,8 +47,10 @@ class PictureUpload extends React.Component {
         // imagesRef.putString("", 'base64', {contentType: 'image/jpg'}).then((snapshot) => {
         //     console.log('Uploaded a blob or file!');
         // });
+    }
 
-
+    base64Parser(encodedStr){
+        return encodedStr.replace(/^data:image\/[a-z]+;base64,/, "");
     }
 
     async addInstaceToFirestore(item){
