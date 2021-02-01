@@ -32,10 +32,15 @@ const styles = {
 class PictureUpload extends React.Component {
     constructor(props) {
         super(props);
+        
+        
         this.state = {
             items: [],
-            uploadSuccess: false
+            uploadSuccess: false,
+            title: ""
         };
+        
+        
         //Functions to Update The States
         this.handleAdditions = this.handleAdditions.bind(this);
         this.clearAll = this.clearAll.bind(this);
@@ -46,6 +51,7 @@ class PictureUpload extends React.Component {
         this.uploadButton = this.uploadButton.bind(this);
         //Functions to handle Alerts
         this.handleCloseUploadAlert = this.handleCloseUploadAlert.bind(this);
+        this.addRefToFirestore = this.addRefToFirestore.bind(this);
     }
 
     handleAdditions(newItems) {
@@ -81,7 +87,7 @@ class PictureUpload extends React.Component {
     }
 
     handleName(event) {
-        const newName = event.target.value;
+        this.setState({title: event.target.value});
         //TODO: Find a efficient and maintainable way to edit the file name
     }
 
@@ -93,7 +99,7 @@ class PictureUpload extends React.Component {
         }
     }
 
-    uploadFile(item) {
+    async uploadFile(item) {
         //Get a reference to the storage service, which is used to create references in your storage bucket
         //Create a storage reference from storage service
         const storageRef = firebase.storage().ref('/gallery/');
@@ -103,8 +109,17 @@ class PictureUpload extends React.Component {
 
         imagesRef.putString(data, 'base64').then((snapshot) => {
             console.log('Uploaded a blob or file!');
-            //TODO: Add some UI element to display if upload completed
+            this.addRefToFirestore(item, this.state.title);
+            this.setState({uploadSuccess: true});
+            setTimeout(() => {
+                this.setState({
+                    uploadSuccess: false,
+                    items: [],
+                    title: ""
+                });
+            }, 6000);
         });
+        
     }
 
 
@@ -112,14 +127,18 @@ class PictureUpload extends React.Component {
         return encodedStr.replace(/^data:image\/[a-z]+;base64,/, "");
     }
 
-    async addInstaceToFirestore(item) {
+    async addRefToFirestore(item, title) {
         const db = firebase.firestore();
 
         const ref = db.collection('gallery');
 
-        const res = await ref.add({
-            ref: item.ref //Get location of uploaded file
-        })
+        let obj = {
+            ref: `/gallery/${item.file.name}`,
+            title
+        }
+
+        const res = await ref.add(obj)
+        console.log("Updated firestore");
     }
 
     clearAll() {
@@ -132,16 +151,16 @@ class PictureUpload extends React.Component {
     handleCloseUploadAlert() {
         this.setState(state => ({
             items: state.item,
-            uploadSuccess: true,
+            uploadSuccess: false,
         }));
     }
 
     render() {
         const { classes } = this.props;
 
-        const chipIcons = this.state.items.map(item => {
-            return (<Avatar alt={item.file.name} src={item.data} />);
-        });
+        // const chipIcons = this.state.items.map(item => {
+        //     return (<Avatar alt={item.file.name} src={item.data} />);
+        // });
 
         return (
             <Container maxWidth={false} className={classes.container}>
