@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Snackbar } from '@material-ui/core';
+import { Container, Button, Snackbar, Avatar, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
@@ -22,7 +22,11 @@ const styles = {
     chipContainer: {
         spacing: 1,
         direction: 'row'
-    }
+    },
+    previewChip: {
+        minWidth: 160,
+        maxWidth: 210
+    },
 };
 
 class PictureUpload extends React.Component {
@@ -32,15 +36,22 @@ class PictureUpload extends React.Component {
             items: [],
             uploadSuccess: false
         };
-        this.handleChange = this.handleChange.bind(this);
+        //Functions to Update The States
+        this.handleAdditions = this.handleAdditions.bind(this);
         this.clearAll = this.clearAll.bind(this);
+        this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleName = this.handleName.bind(this);
+        //Functions to Interact with the Database
         this.uploadFile = this.uploadFile.bind(this);
         this.uploadButton = this.uploadButton.bind(this);
+        //Functions to handle Alerts
         this.handleCloseUploadAlert = this.handleCloseUploadAlert.bind(this);
     }
 
-    handleChange(newItems) {
-        let items = this.state.items;
+    handleAdditions(newItems) {
+        //TODO: Think of a way to upload multiple images
+        //with changed names
+        let items = [];
 
         newItems.forEach(newItem => {
             //Check if the Object is already there in the Array
@@ -59,6 +70,19 @@ class PictureUpload extends React.Component {
         }));
 
         console.log(this.state.items);
+    }
+
+    handleDeletion(file, index) {
+        //TODO: Change after implementing multiple file uploads
+        this.setState(state => ({
+            items: [],
+            uploadSuccess: state.uploadSuccess,
+        }));
+    }
+
+    handleName(event) {
+        const newName = event.target.value;
+        //TODO: Find a efficient and maintainable way to edit the file name
     }
 
     uploadButton() {
@@ -115,13 +139,32 @@ class PictureUpload extends React.Component {
     render() {
         const { classes } = this.props;
 
+        const chipIcons = this.state.items.map(item => {
+            return (<Avatar alt={item.file.name} src={item.data} />);
+        });
+
         return (
             <Container maxWidth={false} className={classes.container}>
                 <DropzoneAreaBase
                     filesLimit={1}
                     clearOnUnmount
-                    onAdd={this.handleChange}
+                    onAdd={this.handleAdditions}
+                    onDelete={this.handleDeletion}
+                    showPreviews
+                    showPreviewsInDropzone={false}
+                    useChipsForPreview
+                    previewGridProps={{ container: { spacing: 1, direction: 'row' } }}
+                    previewChipProps={{
+                        classes: { root: classes.previewChip },
+                        //TODO: Implement the Avatar Feature
+                        // avatar: chipIcons, 
+                    }}
+                    previewText="Selected Image"
+                    fileObjects={this.state.items}
                 />
+                <form noValidate autoComplete="off">
+                    <TextField id="standard-basic" label="Name Of The File" required onChange={this.handleName}/>
+                </form>
                 <Button className={classes.button} variant="contained" color="primary" onClick={this.uploadButton}>
                     Upload
                 </Button>
