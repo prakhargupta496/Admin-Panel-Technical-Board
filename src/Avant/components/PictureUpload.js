@@ -1,9 +1,9 @@
 import React from 'react';
-import { Container, Button, Snackbar, Avatar, TextField } from '@material-ui/core';
+import { Container, Button, Snackbar, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withStyles } from '@material-ui/core/styles';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import firebase from '../Home/firebase';
+import firebase from '../firebase';
 
 const styles = {
     container: {
@@ -145,6 +145,7 @@ class PictureUpload extends React.Component {
         this.setState(state => ({
             items: [],
             uploadSuccess: state.uploadSuccess,
+            title: ""
         }));
     }
 
@@ -158,6 +159,7 @@ class PictureUpload extends React.Component {
     render() {
         const { classes } = this.props;
 
+        //TODO: Image Previews
         // const chipIcons = this.state.items.map(item => {
         //     return (<Avatar alt={item.file.name} src={item.data} />);
         // });
@@ -182,7 +184,7 @@ class PictureUpload extends React.Component {
                     fileObjects={this.state.items}
                 />
                 <form noValidate autoComplete="off">
-                    <TextField id="standard-basic" label="Name Of The File" required onChange={this.handleName}/>
+                    <TextField id="standard-basic" label="Title of the Image" required onChange={this.handleName}/>
                 </form>
                 <Button className={classes.button} variant="contained" color="primary" onClick={this.uploadButton}>
                     Upload

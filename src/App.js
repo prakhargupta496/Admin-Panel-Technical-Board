@@ -1,9 +1,11 @@
 import React from 'react';
-import PictureUpload from './components/PictureUpload';
+import Avant from './Avant';
 
 function App() {
   return (
-    <PictureUpload />
+    <React.Fragment>
+      <Avant />
+    </React.Fragment>
   );
 }
 
