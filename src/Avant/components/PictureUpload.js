@@ -72,10 +72,8 @@ class PictureUpload extends React.Component {
 
         this.setState(state => ({
             items: items,
-            uploadSuccess: this.state.uploadSuccess
+            uploadSuccess: state.uploadSuccess
         }));
-
-        console.log(this.state.items);
     }
 
     handleDeletion(file, index) {
@@ -110,18 +108,14 @@ class PictureUpload extends React.Component {
         imagesRef.putString(data, 'base64').then((snapshot) => {
             console.log('Uploaded a blob or file!');
             this.addRefToFirestore(item, this.state.title);
-            this.setState({uploadSuccess: true});
-            setTimeout(() => {
-                this.setState({
-                    uploadSuccess: false,
-                    items: [],
-                    title: ""
-                });
-            }, 6000);
+            this.setState({
+                uploadSuccess: true,
+                items: [],
+                title: ""
+            });
         });
         
     }
-
 
     base64Parser(encodedStr) {
         return encodedStr.replace(/^data:image\/[a-z]+;base64,/, "");
@@ -129,15 +123,12 @@ class PictureUpload extends React.Component {
 
     async addRefToFirestore(item, title) {
         const db = firebase.firestore();
-
         const ref = db.collection('gallery');
 
-        let obj = {
+        await ref.add({
             ref: `/gallery/${item.file.name}`,
             title
-        }
-
-        const res = await ref.add(obj)
+        })
         console.log("Updated firestore");
     }
 
@@ -190,7 +181,7 @@ class PictureUpload extends React.Component {
                     Upload
                 </Button>
                 <Button className={classes.button} variant="contained" color="secondary" onClick={this.clearAll}>
-                    Delete All
+                    Delete
                 </Button>
                 {
                     this.state.uploadSuccess && (
