@@ -1,0 +1,25 @@
+.paper {
+    margin-top: 160px;
+    display: "flex";
+    flex-direction: "column";
+    text-align: "center" !important;
+    align-items: "center" !important;
+  }
+  .avatar {
+    margin-bottom: 10px;
+    background-color: red !important;
+  }
+  .form {
+    width: "100%";
+    margin-top: 40px;
+  }
+  .submit {
+    margin-top: 20px !important;
+    margin-left: 7px !important;
+    margin-right: 7px !important;
+  }
+  
+  .link {
+    margin-right: 7px;
+  }
+  
